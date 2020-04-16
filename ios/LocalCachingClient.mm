@@ -248,6 +248,7 @@ struct ProgressTask {
   int _cachedPendingProgress;
   int _cachedPendingStudyMaterials;
   int _cachedGuruKanjiCount;
+  int _cachedGuruVocabCount;
   std::array<int, 6> _cachedSrsLevelCounts;
   bool _isCachedAvailableSubjectCountsStale;
   bool _isCachedPendingProgressStale;
@@ -711,6 +712,25 @@ struct ProgressTask {
   }
 }
 
+- (int)getGuruVocabCount {
+  @synchronized(self) {
+    [self maybeUpdateCachedSrsLevelCounts];
+    return _cachedGuruVocabCount;
+  }
+}
+
+- (int)guruCountForType:(TKMSubject_Type)type inDB:(FMDatabase *_Nonnull)db {
+  FMResultSet *gr = [db executeQuery:
+                            @"SELECT COUNT(*) FROM subject_progress WHERE srs_stage "
+                            @">= 5 AND subject_type = ?",
+                            @(type)];
+  int count = 0;
+  while ([gr next]) {
+    count = [gr intForColumnIndex:0];
+  }
+  return count;
+}
+
 - (void)maybeUpdateCachedSrsLevelCounts {
   if (!_isCachedSrsLevelCountsStale) {
     return;
@@ -718,13 +738,8 @@ struct ProgressTask {
 
   _cachedSrsLevelCounts.fill(0);
   [_db inDatabase:^(FMDatabase *_Nonnull db) {
-    FMResultSet *gr = [db executeQuery:
-                              @"SELECT COUNT(*) FROM subject_progress WHERE srs_stage "
-                              @">= 5 AND subject_type = ?",
-                              @(TKMSubject_Type_Kanji)];
-    while ([gr next]) {
-      _cachedGuruKanjiCount = [gr intForColumnIndex:0];
-    }
+    _cachedGuruKanjiCount = [self guruCountForType:TKMSubject_Type_Kanji inDB:db];
+    _cachedGuruVocabCount = [self guruCountForType:TKMSubject_Type_Vocabulary inDB:db];
 
     FMResultSet *r = [db executeQuery:
                              @"SELECT srs_stage, COUNT(*) FROM subject_progress "

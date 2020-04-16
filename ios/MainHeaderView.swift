@@ -159,6 +159,7 @@ class MainHeaderView: UIView {
   @objc func update(username: String,
                     level: Int,
                     guruKanji: Int,
+                    guruVocab: Int,
                     imageURL: URL?,
                     vacationMode: Bool) {
     if let imageURL = imageURL {
@@ -166,7 +167,7 @@ class MainHeaderView: UIView {
     }
 
     usernameLabel.text = username
-    levelLabel.text = "Level \(level) \u{00B7} learned \(guruKanji) kanji"
+    levelLabel.text = "Lv\(level) \u{00B7} \(guruKanji)漢字 \u{00B7} \(guruVocab)単語"
     isOnVacation = vacationMode
     vacationContainer.alpha = isOnVacation ? 1.0 : 0.0
     setNeedsLayout()

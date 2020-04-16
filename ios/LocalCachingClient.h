@@ -60,6 +60,7 @@ typedef void (^SyncProgressHandler)(float progress);
 - (NSArray<TKMAssignment *> *)getAssignmentsAtUsersCurrentLevel;
 - (int)getSrsLevelCount:(TKMSRSStageCategory)level;
 - (int)getGuruKanjiCount;
+- (int)getGuruVocabCount;
 - (NSTimeInterval)getAverageRemainingLevelTime;
 
 // Setters: save the data to the database and return immediately, make network requests in the

@@ -386,12 +386,14 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
       return
     }
     let guruKanji = services.localCachingClient.getGuruKanjiCount()
+    let guruVocab = services.localCachingClient.getGuruVocabCount()
     let imageURL = email.isEmpty ? URL(string: kDefaultProfileImageURL)
       : userProfileImageURL(emailAddress: email)
 
     headerView.update(username: user.username,
                       level: Int(user.level),
                       guruKanji: Int(guruKanji),
+                      guruVocab: Int(guruVocab),
                       imageURL: imageURL,
                       vacationMode: user.hasVacationStartedAt)
     headerView.layoutIfNeeded()
